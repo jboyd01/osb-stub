@@ -7,8 +7,9 @@ import (
 	"github.com/golang/glog"
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
 
-	osb "github.com/pmorie/go-open-service-broker-client/v2"
 	"reflect"
+
+	osb "github.com/pmorie/go-open-service-broker-client/v2"
 )
 
 // NewBusinessLogic is a hook that is called with the Options the program is run
@@ -48,38 +49,25 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 	osbResponse := &osb.CatalogResponse{
 		Services: []osb.Service{
 			{
-				Name:          "example-starter-pack-service",
-				ID:            "4f6e6cf6-ffdd-425f-a2c7-3c9258ad246a",
-				Description:   "The example service from the osb starter pack!",
+				Name:          "noop-service",
+				ID:            "0861dc50-beed-4f9d-ba97-e78f43b802da",
+				Description:   "No-op service",
 				Bindable:      true,
 				PlanUpdatable: truePtr(),
 				Metadata: map[string]interface{}{
-					"displayName": "Example starter pack service",
-					"imageUrl":    "https://avatars2.githubusercontent.com/u/19862012?s=200&v=4",
+					"displayName": "No-op dummy service",
+					"imageUrl":    "http://www.clker.com/cliparts/E/k/O/b/J/Q/do-not-th.png",
 				},
 				Plans: []osb.Plan{
 					{
 						Name:        "default",
-						ID:          "86064792-7ea2-467b-af93-ac9694d96d5b",
-						Description: "The default plan for the starter pack example service",
+						ID:          "977715c5-4a12-452f-994a-4caf4f8cba02",
+						Description: "The default plan for the no-op service",
 						Free:        truePtr(),
 						Schemas: &osb.Schemas{
 							ServiceInstance: &osb.ServiceInstanceSchema{
 								Create: &osb.InputParametersSchema{
-									Parameters: map[string]interface{}{
-										"type": "object",
-										"properties": map[string]interface{}{
-											"color": map[string]interface{}{
-												"type":    "string",
-												"default": "Clear",
-												"enum": []string{
-													"Clear",
-													"Beige",
-													"Grey",
-												},
-											},
-										},
-									},
+									Parameters: map[string]interface{}{},
 								},
 							},
 						},
@@ -89,7 +77,7 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 		},
 	}
 
-	glog.Infof("catalog response: %#+v", osbResponse)
+	glog.V(6).Infof("catalog response: %#+v", osbResponse)
 
 	response.CatalogResponse = *osbResponse
 
@@ -98,8 +86,8 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 
 func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.RequestContext) (*broker.ProvisionResponse, error) {
 	// Your provision business logic goes here
+	glog.V(6).Infof("identity: %+v", request.OriginatingIdentity)
 
-	// example implementation:
 	b.Lock()
 	defer b.Unlock()
 
@@ -121,7 +109,7 @@ func (b *BusinessLogic) Provision(request *osb.ProvisionRequest, c *broker.Reque
 			// Instance ID in use, this is a conflict.
 			description := "InstanceID in use"
 			return nil, osb.HTTPStatusCodeError{
-				StatusCode: http.StatusConflict,
+				StatusCode:  http.StatusConflict,
 				Description: &description,
 			}
 		}

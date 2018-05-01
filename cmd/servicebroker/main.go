@@ -20,7 +20,7 @@ import (
 	"github.com/pmorie/osb-broker-lib/pkg/metrics"
 	"github.com/pmorie/osb-broker-lib/pkg/rest"
 	"github.com/pmorie/osb-broker-lib/pkg/server"
-	"github.com/pmorie/osb-starter-pack/pkg/broker"
+	"github.com/jboyd01/osb-stub/pkg/broker"
 )
 
 var options struct {

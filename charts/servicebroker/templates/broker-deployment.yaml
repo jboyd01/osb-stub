@@ -22,7 +22,7 @@ spec:
     spec:
       serviceAccount: {{ template "fullname" . }}-service
       containers:
-      - name: service-broker-skeleton
+      - name: osb-stub
         image: {{ .Values.image }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command:
@@ -45,9 +45,9 @@ spec:
         - "5"
         - -logtostderr
         - --tls-cert-file
-        - "/var/run/osb-starter-pack/starterpack.crt"
+        - "/var/run/osb-stub/osbstub.crt"
         - --tls-private-key-file
-        - "/var/run/osb-starter-pack/starterpack.key"
+        - "/var/run/osb-stub/osbstub.key"
         ports:
         - containerPort: 8443
         readinessProbe:
@@ -59,16 +59,16 @@ spec:
           successThreshold: 1
           timeoutSeconds: 2
         volumeMounts:
-        - mountPath: /var/run/osb-starter-pack
-          name: osb-starter-pack-ssl
+        - mountPath: /var/run/osb-stub
+          name: osb-stub-ssl
           readOnly: true
       volumes:
-      - name: osb-starter-pack-ssl
+      - name: osb-stub-ssl
         secret:
           defaultMode: 420
-          secretName: broker-skeleton-broker-skeleton-osb-starter-pack-cert
+          secretName: osb-stub-osb-stub-osb-stub-cert
           items:
           - key: tls.crt
-            path: starterpack.crt
+            path: osbstub.crt
           - key: tls.key
-            path: starterpack.key
+            path: osbstub.key

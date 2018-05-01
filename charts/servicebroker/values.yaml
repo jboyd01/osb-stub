@@ -1,8 +1,8 @@
-# Default values for the broker-skeleton
+# Default values for the osb-stub
 # Image to use
-image: quay.io/osb-starter-pack/servicebroker:latest
+image: quay.io/osb-stub/servicebroker:latest
 # ImagePullPolicy; valid values are "IfNotPresent", "Never", and "Always"
-imagePullPolicy: Always
+imagePullPolicy: IfNotPresent
 authenticate: true
 # Certificate details to use for TLS. Leave blank to not use TLS
 tls:

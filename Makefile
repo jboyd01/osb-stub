@@ -3,19 +3,19 @@ ifdef USE_SUDO_FOR_DOCKER
 	SUDO_CMD = sudo
 endif
 
-IMAGE ?= quay.io/osb-starter-pack/servicebroker
+IMAGE ?= quay.io/jboyd01/osb-stub
 TAG ?= $(shell git describe --tags --always)
 PULL ?= IfNotPresent
 
-build: ## Builds the starter pack
-	go build -i github.com/pmorie/osb-starter-pack/cmd/servicebroker
+build: ## Builds the osb-stub
+	go build -i github.com/jboyd01/osb-stub/cmd/servicebroker
 
 test: ## Runs the tests
 	go test -v $(shell go list ./... | grep -v /vendor/ | grep -v /test/)
 
 linux: ## Builds a Linux executable
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	go build -o servicebroker-linux --ldflags="-s" github.com/pmorie/osb-starter-pack/cmd/servicebroker
+	go build -o servicebroker-linux --ldflags="-s" github.com/jboyd01/osb-stub/cmd/servicebroker
 
 image: linux ## Builds a Linux based image
 	cp servicebroker-linux image/servicebroker
@@ -30,12 +30,12 @@ push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
 	$(SUDO_CMD) docker push "$(IMAGE):$(TAG)"
 
 deploy-helm: image ## Deploys image with helm
-	helm upgrade --install broker-skeleton --namespace broker-skeleton \
+	helm --debug upgrade --install osb-stub --namespace osb-stub \
 	charts/servicebroker \
 	--set image="$(IMAGE):$(TAG)",imagePullPolicy="$(PULL)"
 
 deploy-openshift: image ## Deploys image to openshift
-	oc get project osb-starter-pack || oc new-project osb-starter-pack
+	oc get project osb-stub || oc new-project osb-stub
 	openshift/deploy.sh $(IMAGE):$(TAG)
 
 create-ns: ## Cleans up the namespaces
